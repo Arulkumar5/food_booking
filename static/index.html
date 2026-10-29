@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#0b0f19">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Nestora Food">
+    <title>Nestora Mobile Food App</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: rgba(18, 26, 43, 0.85);
+            --card-border: rgba(0, 242, 254, 0.15);
+            --neon-teal: #00f2fe;
+            --neon-emerald: #10b981;
+            --primary-btn-bg: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+            --btn-glow: rgba(0, 242, 254, 0.35);
+            --error-red: #ff4b4b;
+            --text-white: #ffffff;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(0, 242, 254, 0.08) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            color: var(--text-white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-bottom: 76px;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 24px;
+            width: 100%;
+            max-width: 440px;
+            padding: 0 16px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(0, 242, 254, 0.1);
+            border: 1px solid rgba(0, 242, 254, 0.3);
+            border-radius: 20px;
+            color: var(--neon-teal);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.9rem;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+            background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .tab-content {
+            display: none;
+            width: 100%;
+            max-width: 440px;
+            padding: 16px;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        /* Mobile Notification Card */
+        .notification-card {
+            width: 100%;
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
+        .notif-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .notif-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--neon-emerald);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .notif-sub {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .notif-btn {
+            padding: 8px 12px;
+            background: var(--neon-emerald);
+            border: none;
+            border-radius: 10px;
+            color: #0b0f19;
+            font-weight: 800;
+            font-size: 0.75rem;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Action Button */
+        .action-button-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 200px;
+            height: 200px;
+            margin: 6px 0;
+        }
+
+        .pulse-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: var(--btn-glow);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.15); opacity: 0.2; }
+        }
+
+        .action-btn {
+            position: relative;
+            z-index: 2;
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary-btn-bg);
+            box-shadow: 0 12px 32px var(--btn-glow),
+                        inset 0 4px 8px rgba(255, 255, 255, 0.4);
+            color: #0b0f19;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .action-btn:active {
+            transform: scale(0.94);
+            box-shadow: 0 4px 16px var(--btn-glow);
+        }
+
+        .action-btn.disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .action-btn svg {
+            width: 42px;
+            height: 42px;
+            fill: #0b0f19;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.15));
+        }
+
+        .action-btn .btn-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Status Card */
+        .status-card {
+            width: 100%;
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .status-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-title {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .status-pill {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .status-pill.idle { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+        .status-pill.running { background: rgba(0, 242, 254, 0.2); color: var(--neon-teal); }
+        .status-pill.success { background: rgba(16, 185, 129, 0.2); color: var(--neon-emerald); }
+        .status-pill.error { background: rgba(255, 75, 75, 0.2); color: var(--error-red); }
+
+        .status-message {
+            font-size: 0.9rem;
+            font-weight: 600;
+            line-height: 1.4;
+        }
+
+        /* Logs Box */
+        .logs-box {
+            width: 100%;
+            max-height: 110px;
+            background: rgba(9, 13, 22, 0.9);
+            border-radius: 12px;
+            padding: 10px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            color: #cbd5e1;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 100%;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--neon-teal);
+        }
+
+        .stat-lbl {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        /* Table */
+        .db-table-container {
+            width: 100%;
+            background: var(--bg-card);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+            text-align: left;
+        }
+
+        th {
+            background: rgba(9, 13, 22, 0.9);
+            padding: 10px 12px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .badge-tag {
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+        }
+        .badge-tag.SUCCESS { background: rgba(16, 185, 129, 0.2); color: var(--neon-emerald); }
+        .badge-tag.FAILED { background: rgba(255, 75, 75, 0.2); color: var(--error-red); }
+
+        /* Bottom Nav Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 64px;
+            background: rgba(11, 15, 25, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--card-border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: var(--text-muted);
+            font-size: 0.7rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .nav-item.active {
+            color: var(--neon-teal);
+        }
+
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="badge">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            Nestora Mobile App
+        </div>
+        <h1>Nestora Food App</h1>
+    </header>
+
+    <!-- TAB 1: BOOK NOW -->
+    <div class="tab-content active" id="tab-book">
+        
+        <div class="notification-card">
+            <div class="notif-info">
+                <span class="notif-title">Phone Notifications</span>
+                <span class="notif-sub">Receive instant alerts at 8:00 PM</span>
+            </div>
+            <a href="https://ntfy.sh/nestora_food_booking_arul" target="_blank" class="notif-btn">
+                Enable Alerts 🔔
+            </a>
+        </div>
+
+        <div class="action-button-container">
+            <div class="pulse-ring" id="pulseRing"></div>
+            <button class="action-btn" id="bookBtn" onclick="triggerBooking()">
+                <svg viewBox="0 0 24 24">
+                    <path d="M11 9H9V2H7v7H5V2H3v7c0 2.12 1.46 3.9 3.43 4.38l-.43 7.62h2l-.43-7.62C9.54 12.9 11 11.12 11 9zm5-7v7h1v12h2V2h-3z"/>
+                </svg>
+                <div class="btn-title">Auto-Book<br>Meals</div>
+            </button>
+        </div>
+
+        <div class="status-card">
+            <div class="status-header">
+                <span class="status-title">Current Status</span>
+                <span class="status-pill idle" id="statusPill">READY</span>
+            </div>
+            <div class="status-message" id="statusMessage">
+                System automatically books today's and tomorrow's foods every day at 8:00 PM.
+            </div>
+            <div class="logs-box" id="logsBox">
+                <div>[00:00:00] Auto-booking scheduler & DB active.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 2: HISTORY & DB -->
+    <div class="tab-content" id="tab-history">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-val" id="statRuns">0</div>
+                <div class="stat-lbl">Total Runs</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="statSuccess">0</div>
+                <div class="stat-lbl">Success</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-val" id="statRate">100%</div>
+                <div class="stat-lbl">Rate</div>
+            </div>
+        </div>
+
+        <div class="db-table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Target Date</th>
+                        <th>Status</th>
+                        <th>Meals</th>
+                    </tr>
+                </thead>
+                <tbody id="dbHistoryBody">
+                    <tr><td colspan="4" style="text-align:center; color: var(--text-muted);">Loading database records...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- BOTTOM NAV BAR -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('book', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
+            Book Now
+        </div>
+        <div class="nav-item" onclick="switchTab('history', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-4v4h-2v-4H7v-2h4V7h2v4h4v2z"/></svg>
+            History & DB
+        </div>
+    </nav>
+
+    <script>
+        let isPolling = false;
+
+        function switchTab(tabId, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            el.classList.add('active');
+
+            if (tabId === 'history') {
+                loadHistoryAndStats();
+            }
+        }
+
+        async function triggerBooking() {
+            const btn = document.getElementById("bookBtn");
+            btn.classList.add("disabled");
+            
+            try {
+                const res = await fetch("/api/book-tomorrow", { method: "POST" });
+                const data = await res.json();
+                
+                if (data.status === "started" || data.status === "already_running") {
+                    startPolling();
+                }
+            } catch (err) {
+                alert("Failed to connect to server.");
+                btn.classList.remove("disabled");
+            }
+        }
+
+        function startPolling() {
+            if (isPolling) return;
+            isPolling = true;
+
+            const interval = setInterval(async () => {
+                try {
+                    const res = await fetch("/api/status");
+                    const state = await res.json();
+
+                    updateUI(state);
+
+                    if (state.status !== "running") {
+                        clearInterval(interval);
+                        isPolling = false;
+                        document.getElementById("bookBtn").classList.remove("disabled");
+                        loadHistoryAndStats();
+                    }
+                } catch (err) {}
+            }, 1000);
+        }
+
+        function updateUI(state) {
+            const pill = document.getElementById("statusPill");
+            const msg = document.getElementById("statusMessage");
+            const logsBox = document.getElementById("logsBox");
+
+            pill.className = `status-pill ${state.status}`;
+            pill.innerText = state.status.toUpperCase();
+            msg.innerText = state.message;
+
+            if (state.logs && state.logs.length > 0) {
+                logsBox.innerHTML = state.logs.map(l => `<div>${l}</div>`).join('');
+                logsBox.scrollTop = logsBox.scrollHeight;
+            }
+        }
+
+        async function loadHistoryAndStats() {
+            try {
+                const [histRes, statsRes] = await Promise.all([
+                    fetch("/api/history"),
+                    fetch("/api/stats")
+                ]);
+
+                const history = await histRes.json();
+                const stats = await statsRes.json();
+
+                document.getElementById("statRuns").innerText = stats.total_runs;
+                document.getElementById("statSuccess").innerText = stats.successful_runs;
+                document.getElementById("statRate").innerText = stats.success_rate + "%";
+
+                const tbody = document.getElementById("dbHistoryBody");
+                if (history.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;">No records in database yet.</td></tr>`;
+                    return;
+                }
+
+                tbody.innerHTML = history.map(r => `
+                    <tr>
+                        <td>${r.timestamp.split(' ')[1]}</td>
+                        <td>${r.target_date}</td>
+                        <td><span class="badge-tag ${r.status}">${r.status}</span></td>
+                        <td>${r.meals_booked}</td>
+                    </tr>
+                `).join('');
+            } catch (err) {}
+        }
+
+        // Initial fetch
+        fetch("/api/status").then(r => r.json()).then(updateUI).catch(() => {});
+    </script>
+</body>
+</html>
